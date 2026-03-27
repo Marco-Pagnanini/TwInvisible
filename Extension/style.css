@@ -2,11 +2,13 @@
     box-sizing: border-box;
     padding: 0;
     margin: 0;
+    font-weight: 600;
+    text-shadow: #0a090c 1px 0 10px;
 }
 
 body {
     font-family: 'Work Sans', sans-serif;
-    background: url('download.jpg'); /* Immagine di sfondo */
+    background: url('download.jpg');
     background-size: cover;
     background-position: center;
     display: flex;
@@ -24,17 +26,18 @@ body {
 
 .dropzone-box {
     border-radius: 1rem;
-    min-width: 20rem;
-    padding: 2rem;
+    margin: 1rem 0;
+    min-width: 26rem;
+    padding: 1rem;
     display: flex;
     justify-content: center;
     flex-direction: column;
-    max-width: 36rem;
+    max-width: 26rem;
     box-shadow: rgba(50, 50, 50, 0.1) 0px 2px 8px 0px;
     border: 1px solid #EDF1F3;
     width: 100%;
-    background: rgba(255, 255, 255, 0.1); 
-    backdrop-filter: blur(10px); 
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
     border-radius: 1rem;
     color: #F2F7FE;
     transition: all 0.3s ease;
@@ -47,15 +50,16 @@ body {
 }
 
 .dropzone-box p {
-    font-size: 1.15rem;
+    font-size: 1rem;
+    margin: 0;
     color: #FFFFFF;
 }
 
 .dropzone-area {
     padding: 1rem;
     position: relative;
-    margin-top: 1.5rem;
-    min-height: 16rem;
+    margin: 1rem 0;
+    min-height: 10rem;
     display: flex;
     text-align: center;
     justify-content: center;
@@ -71,6 +75,10 @@ body {
     margin-top: 1rem;
     display: flex;
     justify-content: space-between;
+}
+
+.dropzone-descriptions-span{
+    font-size: 1rem;
 }
 
 .dropzone-area .file-info {
@@ -108,14 +116,14 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 2rem;
+    margin-top: 0.5rem;
     gap: 1rem;
 }
 
 .dropzone-actions button {
     flex-grow: 1;
-    min-height: 3rem;
-    font-size: 1.2rem;
+    min-height: 2rem;
+    font-size: 1rem;
     border: none;
     transition: all 0.3 ease;
 }
