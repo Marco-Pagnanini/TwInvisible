@@ -3,6 +3,9 @@ using HtmlModifier.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Aspire ServiceDefaults (health checks, telemetry, resilience)
+builder.AddServiceDefaults();
+
 // Listen on all network interfaces (accessible from other computers)
 builder.WebHost.UseUrls("http://0.0.0.0:5062");
 
@@ -39,6 +42,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.MapDefaultEndpoints();
 app.UseCors();
 app.MapControllers();
 
