@@ -10,9 +10,11 @@ import Animated, {
   withRepeat,
   withSequence,
   withTiming,
+  cancelAnimation,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { waitForApi } from "../store";
 
 // ─── config ───────────────────────────────────────────────────────────────────
 const ORBIT_RX  = 75;
@@ -100,7 +102,28 @@ export default function Loading() {
   const burst2 = useSharedValue(1);
   const bursts  = [burst0, burst1, burst2];
 
+  const [apiReady, setApiReady] = useState(false);
   const navigateToGraph = () => router.replace("/graph");
+
+  // Ascolta la promise API salvata in store
+  useEffect(() => {
+    let alive = true;
+    waitForApi().finally(() => {
+      if (alive) setApiReady(true);
+    });
+    return () => { alive = false; };
+  }, []);
+
+  // Quando API è pronta: completa la barra e naviga
+  useEffect(() => {
+    if (!apiReady) return;
+    cancelAnimation(progress);
+    progress.value = withTiming(
+      1,
+      { duration: 600, easing: Easing.out(Easing.quad) },
+      (finished) => { if (finished) runOnJS(navigateToGraph)(); }
+    );
+  }, [apiReady]);
 
   useEffect(() => {
     // Ingresso
@@ -110,32 +133,32 @@ export default function Loading() {
     // Orbita con soste in primo piano
     const oneCycle = withSequence(
       withTiming(Math.PI / 2,       { duration: SEG1,        easing: Easing.inOut(Easing.quad) }),
-      withTiming(Math.PI / 2,       { duration: FRONT_PAUSE }),        // sosta pink
+      withTiming(Math.PI / 2,       { duration: FRONT_PAUSE }),
       withTiming(7 * Math.PI / 6,   { duration: SEG2,        easing: Easing.inOut(Easing.quad) }),
-      withTiming(7 * Math.PI / 6,   { duration: FRONT_PAUSE }),        // sosta black
+      withTiming(7 * Math.PI / 6,   { duration: FRONT_PAUSE }),
       withTiming(11 * Math.PI / 6,  { duration: SEG3,        easing: Easing.inOut(Easing.quad) }),
-      withTiming(11 * Math.PI / 6,  { duration: FRONT_PAUSE }),        // sosta blue
+      withTiming(11 * Math.PI / 6,  { duration: FRONT_PAUSE }),
       withTiming(2 * Math.PI,       { duration: SEG4,        easing: Easing.inOut(Easing.quad) }),
     );
     angle.value = withRepeat(oneCycle, -1, false);
 
-    // Burst scale — scatta esattamente quando il logo raggiunge il fronte
+    // Burst scale
     const burstOne = withSequence(
       withTiming(BURST_SCALE, { duration: BURST_UP,   easing: Easing.out(Easing.quad) }),
       withTiming(1.0,         { duration: BURST_DOWN, easing: Easing.in(Easing.quad)  }),
-      withTiming(1.0,         { duration: CYCLE - BURST_UP - BURST_DOWN }), // attesa prossimo giro
+      withTiming(1.0,         { duration: CYCLE - BURST_UP - BURST_DOWN }),
     );
-
     bursts.forEach((b, i) => {
       b.value = withDelay(BURST_DELAYS[i], withRepeat(burstOne, -1, false));
     });
 
-    // Progress bar → naviga a graph
-    progress.value = withTiming(
-      1,
-      { duration: 6000, easing: Easing.bezier(0.4, 0, 0.2, 1) },
-      (finished) => { if (finished) runOnJS(navigateToGraph)(); }
-    );
+    // Progress bar: avanza fino a 92% mentre aspetta l'API.
+    // Quando apiReady diventa true, il secondo useEffect completa al 100%.
+    const MAX_WAIT = 60000; // max 60s (timeout Gemini backend)
+    progress.value = withTiming(0.92, {
+      duration: MAX_WAIT,
+      easing: Easing.bezier(0.1, 0, 0.4, 1),
+    });
   }, []);
 
   const introStyle = useAnimatedStyle(() => ({

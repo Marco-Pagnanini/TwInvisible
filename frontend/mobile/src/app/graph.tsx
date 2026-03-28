@@ -21,7 +21,7 @@ import Svg, {
 } from "react-native-svg";
 
 import profiloData from "./profilo.json";
-import { getProfile } from "./store";
+import { getProfile } from "../store";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 const toNum = (v: string | number) => Math.min(100, Math.max(0, Number(v)));

@@ -14,10 +14,8 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { setProfile } from "./store";
-
-// ─── endpoint API ─────────────────────────────────────────────────────────────
-const API_URL = "http://10.10.50.130:5063/api/userprofile";
+import { setProfile, setApiPromise } from "../store";
+import { fetchUserProfile } from "../api";
 
 // ─── messaggi del bot ─────────────────────────────────────────────────────────
 const BOT_MESSAGES = [
@@ -130,45 +128,31 @@ export default function Chat() {
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
 
-  // Chiamata all'API con le prime 5 risposte
-  const callAPI = useCallback(async (answers: string[], noAnswer: string) => {
-    // parse categorie "no" dalla risposta libera
+  // Fetch profilo in background — NON naviga, salva solo nello store.
+  const fetchAndStore = useCallback(async (answers: string[], noAnswer: string) => {
     const noList = noAnswer
       .split(/[,;/]+/)
       .map(s => s.trim())
       .filter(Boolean);
 
     try {
-      const body: Record<string, string> = {};
-      answers.slice(0, 5).forEach((ans, i) => {
-        body[`answer${i + 1}`] = ans;
-      });
-
-      const res  = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      const json = await res.json();
-
+      const json = await fetchUserProfile(answers.slice(0, 5));
       setProfile({
-        ci:     String(json.ci     ?? 60),
-        urg:    String(json.urg    ?? 60),
-        hobby:  String(json.hobby  ?? 60),
-        hype:   String(json.hype   ?? 60),
-        disp_e: String(json.dispE  ?? 60), // API usa "dispE", store usa "disp_e"
+        ci:     String(json.ci    ?? 60),
+        urg:    String(json.urg   ?? 60),
+        hobby:  String(json.hobby ?? 60),
+        hype:   String(json.hype  ?? 60),
+        disp_e: String(json.dispE ?? 60),
         no:     noList,
       });
-    } catch (e) {
-      // fallback: valori di default se l'API non risponde
-      console.warn("API non raggiungibile, uso valori di default:", e);
+    } catch (e: any) {
+      console.warn("Errore API (fallback a valori default):", e?.message ?? e);
       setProfile({
         ci: "60", urg: "60", hobby: "60", hype: "60", disp_e: "60",
         no: noList,
       });
     }
 
-    router.push("/loading");
   }, []);
 
   const sendMessage = useCallback((text: string) => {
@@ -185,22 +169,26 @@ export default function Chat() {
     setCanReply(false);
     setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 100);
 
-    // salva risposta (botIndex è l'indice del messaggio bot a cui si risponde)
-    const answerIndex = botIndex - 1; // risposta 0-based
+    const answerIndex = botIndex - 1;
     answersRef.current[answerIndex] = text.trim();
 
     if (botIndex >= 6) {
-      // Ultima risposta (domanda 6 → categorie "no") → chiama API e naviga
       const allAnswers = [...answersRef.current];
       const noAnswer   = allAnswers[5] ?? "";
-      setTimeout(() => callAPI(allAnswers, noAnswer), 400);
+
+      // Avvia l'API in background e salva la promise nello store.
+      // loading.tsx la aspetterà prima di navigare a graph.
+      const apiPromise = fetchAndStore(allAnswers, noAnswer);
+      setApiPromise(apiPromise);
+
+      // Naviga subito a loading — l'utente vede l'animazione mentre Gemini lavora.
+      setTimeout(() => router.push("/loading"), 300);
       return;
     }
 
-    // Mostra typing poi prossimo messaggio bot
     setTimeout(() => setIsTyping(true), 400);
     setTimeout(() => showBotMessage(botIndex + 1), 2000);
-  }, [botIndex, isTyping, canReply, showBotMessage, callAPI]);
+  }, [botIndex, isTyping, canReply, showBotMessage, fetchAndStore]);
 
   const inputDisabled = !canReply || isTyping;
 
