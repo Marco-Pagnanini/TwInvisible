@@ -3,6 +3,12 @@
   "name": "TwInsible",
   "version": "1.0",
   "permissions": ["storage"],
+  "host_permissions": [
+    "http://10.10.50.130:5062/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_popup": "popup.html"
   },

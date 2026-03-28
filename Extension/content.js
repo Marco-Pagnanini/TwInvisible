@@ -1,5 +1,4 @@
 async function getTokensFromJson() {
-    // Get from the chrome storage the json
     const stored = await new Promise((resolve, reject) => {
         try {
             chrome.storage.local.get(['twin'], result => {
@@ -20,51 +19,71 @@ async function getTokensFromJson() {
         }
     });
 
-    // Get from URL if not found from key
     if (stored) {
         return stored;
     }
-    const url = chrome.runtime.getURL('tokens.json');
-    try {
-        const res = await fetch(url);
-        if (!res.ok) {
-            return { tokens: [] };
-        }
-        const data = await res.json();
-        return data && Array.isArray(data.tokens) ? data : { tokens: [] };
-    } catch {
-        return { tokens: [] };
-    }
+
+    // No bundled tokens.json fallback needed
+    return { tokens: [] };
 }
 
 async function modifyHtmlFromDom(instructions) {
-    // Get html body 
     const html = document.body.outerHTML;
+    console.log('[TwInvisible] HTML size:', html.length, 'chars');
 
-    // 
-    const formData = new FormData();
-    formData.append('html', html);
-    formData.append('instructions', instructions);
-
-    const response = await fetch('http://10.10.50.130:5062/api/htmlmodifier/upload/html', {
-    method: 'POST',
-    body: formData
+    return new Promise((resolve, reject) => {
+        chrome.runtime.sendMessage(
+            { type: 'MODIFY_HTML', html, instructions },
+            response => {
+                const err = chrome.runtime?.lastError;
+                if (err) {
+                    console.error('[TwInvisible] sendMessage error:', err.message);
+                    reject(new Error(err.message));
+                    return;
+                }
+                console.log('[TwInvisible] Background response:', JSON.stringify(response).substring(0, 500));
+                if (response?.success) {
+                    resolve(response.data);
+                } else {
+                    reject(new Error(response?.error || 'Unknown error from background'));
+                }
+            }
+        );
     });
+}
 
-    const result = await response.json();
-    // result.modifiedHtml, result.selectorsApplied, result.success
-    return result;
+function buildInstructionsFromTokens(tokensData) {
+    if (!tokensData || !Array.isArray(tokensData.tokens) || tokensData.tokens.length === 0) {
+        return '';
+    }
+    const tokenList = tokensData.tokens.join(', ');
+    return `Remove all elements that contain or are related to these tokens/keywords: ${tokenList}`;
 }
 
 async function removeTokenContent() {
-    // Get json
-    const jsonFile = await getTokensFromJson();
+    try {
+        const jsonFile = await getTokensFromJson();
 
-    // API call
-    const result = await modifyHtmlFromDom(jsonFile);
+        if (!jsonFile || !jsonFile.tokens || jsonFile.tokens.length === 0) {
+            console.log('[TwInvisible] No tokens found, skipping.');
+            return;
+        }
 
-    // Output in body
-    document.body.outerHTML = result.modifiedHtml;
+        const instructions = buildInstructionsFromTokens(jsonFile);
+        console.log('[TwInvisible] Sending request with instructions:', instructions);
+
+        const result = await modifyHtmlFromDom(instructions);
+        console.log('[TwInvisible] Result received. success:', result?.success, 'modifiedHtml length:', result?.modifiedHtml?.length, 'selectors:', result?.selectorsApplied);
+
+        if (result && result.modifiedHtml) {
+            document.body.outerHTML = result.modifiedHtml;
+            console.log('[TwInvisible] Page modified! Selectors applied:', result.selectorsApplied);
+        } else {
+            console.warn('[TwInvisible] No modifiedHtml in response:', result);
+        }
+    } catch (err) {
+        console.error('[TwInvisible] Error:', err.message);
+    }
 }
 
 removeTokenContent();
