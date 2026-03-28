@@ -1,0 +1,10 @@
+{
+    "dati":{
+        "ci": "60",
+        "urg": "20",
+        "hobby": "60",
+        "hype": "60",
+        "disp_e": "80",
+        "no": ["Tecnologia", "Macchine", "Elettronica"]
+    }
+}
