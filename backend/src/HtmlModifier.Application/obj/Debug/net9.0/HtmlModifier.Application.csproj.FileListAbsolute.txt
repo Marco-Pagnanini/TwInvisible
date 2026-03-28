@@ -1,0 +1,16 @@
+C:\Users\marco\Desktop\Hackathon\TwInvisible\backend\src\HtmlModifier.Application\bin\Debug\net9.0\HtmlModifier.Application.deps.json
+C:\Users\marco\Desktop\Hackathon\TwInvisible\backend\src\HtmlModifier.Application\bin\Debug\net9.0\HtmlModifier.Application.dll
+C:\Users\marco\Desktop\Hackathon\TwInvisible\backend\src\HtmlModifier.Application\bin\Debug\net9.0\HtmlModifier.Application.pdb
+C:\Users\marco\Desktop\Hackathon\TwInvisible\backend\src\HtmlModifier.Application\bin\Debug\net9.0\HtmlModifier.Domain.dll
+C:\Users\marco\Desktop\Hackathon\TwInvisible\backend\src\HtmlModifier.Application\bin\Debug\net9.0\HtmlModifier.Domain.pdb
+C:\Users\marco\Desktop\Hackathon\TwInvisible\backend\src\HtmlModifier.Application\obj\Debug\net9.0\HtmlModifier.Application.csproj.AssemblyReference.cache
+C:\Users\marco\Desktop\Hackathon\TwInvisible\backend\src\HtmlModifier.Application\obj\Debug\net9.0\HtmlModifier.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\marco\Desktop\Hackathon\TwInvisible\backend\src\HtmlModifier.Application\obj\Debug\net9.0\HtmlModifier.Application.AssemblyInfoInputs.cache
+C:\Users\marco\Desktop\Hackathon\TwInvisible\backend\src\HtmlModifier.Application\obj\Debug\net9.0\HtmlModifier.Application.AssemblyInfo.cs
+C:\Users\marco\Desktop\Hackathon\TwInvisible\backend\src\HtmlModifier.Application\obj\Debug\net9.0\HtmlModifier.Application.csproj.CoreCompileInputs.cache
+C:\Users\marco\Desktop\Hackathon\TwInvisible\backend\src\HtmlModifier.Application\obj\Debug\net9.0\HtmlModifier.Application.sourcelink.json
+C:\Users\marco\Desktop\Hackathon\TwInvisible\backend\src\HtmlModifier.Application\obj\Debug\net9.0\HtmlModi.D301F102.Up2Date
+C:\Users\marco\Desktop\Hackathon\TwInvisible\backend\src\HtmlModifier.Application\obj\Debug\net9.0\HtmlModifier.Application.dll
+C:\Users\marco\Desktop\Hackathon\TwInvisible\backend\src\HtmlModifier.Application\obj\Debug\net9.0\refint\HtmlModifier.Application.dll
+C:\Users\marco\Desktop\Hackathon\TwInvisible\backend\src\HtmlModifier.Application\obj\Debug\net9.0\HtmlModifier.Application.pdb
+C:\Users\marco\Desktop\Hackathon\TwInvisible\backend\src\HtmlModifier.Application\obj\Debug\net9.0\ref\HtmlModifier.Application.dll

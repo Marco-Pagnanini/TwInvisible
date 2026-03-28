@@ -1,0 +1,6 @@
+@HtmlModifier.Api_HostAddress = http://localhost:5090
+
+GET {{HtmlModifier.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,30 @@
+services:
+  htmlmodifier-api:
+    build:
+      context: .
+      dockerfile: src/HtmlModifier.Api/Dockerfile
+    container_name: htmlmodifier-api
+    ports:
+      - "5062:5062"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - Gemini__ApiKey=${GEMINI_API_KEY}
+      - Gemini__Model=${GEMINI_MODEL}
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  userprofile-api:
+    build:
+      context: .
+      dockerfile: src/UserProfile.Api/Dockerfile
+    container_name: userprofile-api
+    ports:
+      - "5063:5063"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - Gemini__ApiKey=${GEMINI_API_KEY}
+      - Gemini__Model=${GEMINI_MODEL}
+    env_file:
+      - .env
+    restart: unless-stopped
