@@ -1,48 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-
+  <title>Upload Passkey</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <link rel="stylesheet" href="style.css">
 
 </head>
-
 <body>
 
+  <!-- Background animated elements -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
   <form class="dropzone-box">
+    <div class="form-header">
+      <h2>Store your Passkey</h2>
+      <p>Click or drag & drop a .json passkey</p>
+    </div>
 
-    <div class="buble"></div>
-    <div class="buble"></div>
-    <div class="buble"></div>
-
-    <h2>Upload Passkey</h2>
-    <p>Click to upload or drag and drop</p>
     <div class="dropzone-area">
-      <!-- Icona di upload (opzionale) -->
+      <!-- Modern Cloud Upload Icon -->
       <div class="file-upload-icon">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 4v16m8-8H4"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
         </svg>
       </div>
-      <!-- Input file invisibile -->
+      <!-- Hidden file input -->
       <input type="file" required id="uploaded-file" accept=".json">
-      <!-- Messaggio per file selezionato -->
+      <!-- File selection message -->
       <p class="file-info">No Files Selected</p>
     </div>
+
     <div class="dropzone-actions">
-      <div>
-        <button type="reset">Cancel</button>
-        <button id="submit-button" type="submit">Save</button>
-      </div>
+      <button type="reset">Cancel</button>
+      <button id="submit-button" type="submit">Save Passkey</button>
     </div>
   </form> 
 
   <script src="script.js"></script>
 
 </body>
-
 </html>

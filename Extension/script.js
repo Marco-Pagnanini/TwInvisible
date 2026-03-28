@@ -108,7 +108,6 @@ const saveFileToLocalStorage = () => {
                     console.error("Errore nel recupero del file:", err);
                 });
 
-                alert('File successfully saved to chrome.storage.local as "twin/tokens.json"');
             });
         } 
         catch (error) {
