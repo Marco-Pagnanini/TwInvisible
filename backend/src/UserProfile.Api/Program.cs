@@ -3,9 +3,6 @@ using UserProfile.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Aspire ServiceDefaults (health checks, telemetry, resilience)
-builder.AddServiceDefaults();
-
 builder.WebHost.UseUrls("http://0.0.0.0:5063");
 
 builder.Services.AddControllers();
@@ -30,7 +27,6 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.MapDefaultEndpoints();
 app.UseCors();
 app.MapControllers();
 app.Run();

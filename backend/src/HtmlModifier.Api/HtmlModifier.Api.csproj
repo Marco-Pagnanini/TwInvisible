@@ -14,7 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="..\HtmlModifier.Application\HtmlModifier.Application.csproj" />
     <ProjectReference Include="..\HtmlModifier.Infrastructure\HtmlModifier.Infrastructure.csproj" />
-    <ProjectReference Include="..\TwInvisible.ServiceDefaults\TwInvisible.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>

@@ -14,7 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="..\UserProfile.Application\UserProfile.Application.csproj" />
     <ProjectReference Include="..\UserProfile.Infrastructure\UserProfile.Infrastructure.csproj" />
-    <ProjectReference Include="..\TwInvisible.ServiceDefaults\TwInvisible.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>
