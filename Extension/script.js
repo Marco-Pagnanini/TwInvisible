@@ -80,7 +80,7 @@ form.addEventListener("reset", () => {
     selectedFile = null; // Resetta il file selezionato
 });
 
-// Funzione per salvare il file nel localStorage sotto "twin/tokens.json"
+// Funzione per salvare il file nel chrome.storage.local sotto "twin/tokens.json"
 const saveFileToLocalStorage = () => {
     if (!selectedFile) {
         alert("No file selected.");
@@ -93,15 +93,25 @@ const saveFileToLocalStorage = () => {
             const fileContent = JSON.parse(event.target.result);
 
             // Crea un oggetto che simula la struttura delle cartelle
-            const twinFolder = JSON.parse(localStorage.getItem('twin')) || {};
+            const twinFolder = {}; // puoi leggere dati precedenti se vuoi
 
             // Aggiungi il file JSON sotto il nome "tokens.json" nella cartella "twin"
             twinFolder["tokens.json"] = fileContent;
 
-            // Salva l'oggetto "twin" nel localStorage
-            localStorage.setItem('twin', JSON.stringify(twinFolder));
+            // Salva l'oggetto "twin" nel chrome.storage.local
+            chrome.storage.local.set({ twin: twinFolder }, () => {
+                console.log('File saved in chrome.storage.local');
 
-            alert('File successfully saved to localStorage as "twin/tokens.json"');
+                // ORA sì, recupera subito il file senza errori
+                getFileFromChromeStorage().then((tokensJson) => {
+                    console.log("Tokens:", tokensJson);
+                }).catch((err) => {
+                    console.error("Errore nel recupero del file:", err);
+                });
+
+                alert('File successfully saved to chrome.storage.local as "twin/tokens.json"');
+            });
+
         } catch (error) {
             alert('Error parsing the JSON file. Please try again.');
             console.error('Error parsing JSON:', error);
@@ -111,24 +121,26 @@ const saveFileToLocalStorage = () => {
     reader.readAsText(selectedFile); // Leggi il file come testo
 };
 
-// Aggiungi un listener al pulsante di salvataggio
+// Listener aggiornato per il pulsante submit
 document.getElementById("submit-button").addEventListener("click", (e) => {
     e.preventDefault();  // Evita che il form venga inviato (comportamento predefinito)
-    saveFileToLocalStorage();  // Salva nel localStorage solo quando l'utente clicca "Save"
-    console.log(getFileFromLocalStorage());  // Chiama la funzione per ottenere e stampare il file
+    saveFileToLocalStorage();  // Salva il file solo quando l'utente clicca "Save"
 });
 
-// Funzione per ottenere il file salvato nel localStorage sotto "twin/tokens.json"
-const getFileFromLocalStorage = () => {
-    // Recupera l'oggetto 'twin' dal localStorage
-    const twinFolder = JSON.parse(localStorage.getItem('twin'));
-
-    if (twinFolder && twinFolder["tokens.json"]) {
-        // Se esiste il file "tokens.json", lo stampiamo nella console
-        console.log("Contenuto di 'tokens.json':", twinFolder["tokens.json"]);
-        return twinFolder["tokens.json"];  // Restituisce il contenuto
-    } else {
-        console.log("No 'tokens.json' found in localStorage.");
-        return null;
-    }
-};
+// Funzione asincrona per ottenere il file "tokens.json" da chrome.storage.local
+function getFileFromChromeStorage() {
+    return new Promise((resolve, reject) => {
+        chrome.storage.local.get(['twin'], (result) => {
+            if (chrome.runtime && chrome.runtime.lastError) {
+                reject(chrome.runtime.lastError);
+                return;
+            }
+            const twinFolder = result.twin;
+            if (twinFolder && twinFolder["tokens.json"]) {
+                resolve(twinFolder["tokens.json"]);
+            } else {
+                resolve(null);
+            }
+        });
+    });
+}
