@@ -37,29 +37,34 @@ async function getTokensFromJson() {
     }
 }
 
-async function removeTokenContent() {
-    const jsonFile = await getTokensFromJson();
-    const tokens = jsonFile?.tokens;
+async function modifyHtmlFromDom(instructions) {
+    // Get html body 
+    const html = document.body.outerHTML;
 
-    //FROM NOW IS A PROTOTYPE, FINAL VERSION IS WITH THE API
-    const elements = document.querySelectorAll('h2, h3, p');
+    // 
+    const formData = new FormData();
+    formData.append('html', html);
+    formData.append('instructions', instructions);
 
-    elements.forEach(el => {
-        const text = el.innerText.toLowerCase();
-
-        tokens.forEach(token => {
-            const itoken = token.toLowerCase();
-
-            if (text.includes(itoken)) {
-                let grandParent = el.parentElement?.parentElement;
-                if (grandParent && grandParent.tagName.toLowerCase() === 'div') {
-                    grandParent.remove();
-                } else {
-                    el.remove();
-                }
-            }
-        });
+    const response = await fetch('http://10.10.50.130:5062/api/htmlmodifier/upload/html', {
+    method: 'POST',
+    body: formData
     });
+
+    const result = await response.json();
+    // result.modifiedHtml, result.selectorsApplied, result.success
+    return result;
+}
+
+async function removeTokenContent() {
+    // Get json
+    const jsonFile = await getTokensFromJson();
+
+    // API call
+    const result = await modifyHtmlFromDom(jsonFile);
+
+    // Output in body
+    document.body.outerHTML = result.modifiedHtml;
 }
 
 removeTokenContent();
