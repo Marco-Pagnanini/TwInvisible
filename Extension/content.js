@@ -1,46 +1,77 @@
+console.log('[TwInsible] content script avviato su', location.href);
+
 async function getTokensFromJson() {
-    const stored = await new Promise(resolve => {
-        chrome.storage.local.get(['tokens'], result => {
-            resolve(result.tokens);
-        });
+    // Stesso percorso del popup: twin["tokens.json"] è l'oggetto { tokens: [...] }
+    const stored = await new Promise((resolve, reject) => {
+        try {
+            chrome.storage.local.get(['twin'], result => {
+                const err = chrome.runtime?.lastError;
+                if (err) {
+                    reject(new Error(err.message));
+                    return;
+                }
+                const doc = result.twin?.['tokens.json'];
+                if (doc && Array.isArray(doc.tokens) && doc.tokens.length > 0) {
+                    resolve(doc);
+                } else {
+                    resolve(null);
+                }
+            });
+        } catch (e) {
+            reject(e);
+        }
     });
 
-    if (stored && stored.length > 0) {
+    if (stored) {
         return stored;
     }
 
     const url = chrome.runtime.getURL('tokens.json');
-    const res = await fetch(url);
-    return await res.json();
+    try {
+        const res = await fetch(url);
+        if (!res.ok) {
+            return { tokens: [] };
+        }
+        const data = await res.json();
+        return data && Array.isArray(data.tokens) ? data : { tokens: [] };
+    } catch {
+        return { tokens: [] };
+    }
 }
 
 async function removeTokenContent() {
-    // Load from json
-    const jsonFile = await getTokensFromJson();
-    const tokens = jsonFile.tokens;
+    try {
+        const jsonFile = await getTokensFromJson();
+        console.log('[TwInsible] contenuto tokens:', jsonFile);
 
-    //FROM NOW IS A PROTOTYPE, FINAL VERSION IS WITH THE API
-    // Load all elements (only small)
-    const elements = document.querySelectorAll();
+        const tokens = jsonFile?.tokens;
+        if (!Array.isArray(tokens) || tokens.length === 0) {
+            console.log('[TwInsible] nessun token da applicare (lista vuota o assente).');
+            return;
+        }
 
-    // Research    
-    elements.forEach(el => {
-        const text = el.innerText.toLowerCase();
+        //FROM NOW IS A PROTOTYPE, FINAL VERSION IS WITH THE API
+        const elements = document.querySelectorAll('*');
 
-        tokens.forEach(token => {
-            const itoken = token.toLowerCase();
+        elements.forEach(el => {
+            const text = el.innerText.toLowerCase();
 
-            if (text.includes(itoken)) {
-                let grandParent = el.parentElement?.parentElement;
-                if (grandParent && grandParent.tagName.toLowerCase() === 'div') {
-                    grandParent.remove();
-                } else {
-                    el.remove();
+            tokens.forEach(token => {
+                const itoken = token.toLowerCase();
+
+                if (text.includes(itoken)) {
+                    let grandParent = el.parentElement?.parentElement;
+                    if (grandParent && grandParent.tagName.toLowerCase() === 'div') {
+                        grandParent.remove();
+                    } else {
+                        el.remove();
+                    }
                 }
-            }
-        })
-    })
+            });
+        });
+    } catch (e) {
+        console.error('[TwInsible] errore in removeTokenContent:', e);
+    }
 }
 
-// Remove called
-removeTokenContent();
+removeTokenContent().catch(e => console.error('[TwInsible] promise non gestita:', e));
