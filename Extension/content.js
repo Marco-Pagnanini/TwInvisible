@@ -1,7 +1,5 @@
-console.log('[TwInsible] content script avviato su', location.href);
-
 async function getTokensFromJson() {
-    // Stesso percorso del popup: twin["tokens.json"] è l'oggetto { tokens: [...] }
+    // Get from the chrome storage the json
     const stored = await new Promise((resolve, reject) => {
         try {
             chrome.storage.local.get(['twin'], result => {
@@ -22,10 +20,10 @@ async function getTokensFromJson() {
         }
     });
 
+    // Get from URL if not found from key
     if (stored) {
         return stored;
     }
-
     const url = chrome.runtime.getURL('tokens.json');
     try {
         const res = await fetch(url);
@@ -40,38 +38,28 @@ async function getTokensFromJson() {
 }
 
 async function removeTokenContent() {
-    try {
-        const jsonFile = await getTokensFromJson();
-        console.log('[TwInsible] contenuto tokens:', jsonFile);
+    const jsonFile = await getTokensFromJson();
+    const tokens = jsonFile?.tokens;
 
-        const tokens = jsonFile?.tokens;
-        if (!Array.isArray(tokens) || tokens.length === 0) {
-            console.log('[TwInsible] nessun token da applicare (lista vuota o assente).');
-            return;
-        }
+    //FROM NOW IS A PROTOTYPE, FINAL VERSION IS WITH THE API
+    const elements = document.querySelectorAll('h2, h3, p');
 
-        //FROM NOW IS A PROTOTYPE, FINAL VERSION IS WITH THE API
-        const elements = document.querySelectorAll('*');
+    elements.forEach(el => {
+        const text = el.innerText.toLowerCase();
 
-        elements.forEach(el => {
-            const text = el.innerText.toLowerCase();
+        tokens.forEach(token => {
+            const itoken = token.toLowerCase();
 
-            tokens.forEach(token => {
-                const itoken = token.toLowerCase();
-
-                if (text.includes(itoken)) {
-                    let grandParent = el.parentElement?.parentElement;
-                    if (grandParent && grandParent.tagName.toLowerCase() === 'div') {
-                        grandParent.remove();
-                    } else {
-                        el.remove();
-                    }
+            if (text.includes(itoken)) {
+                let grandParent = el.parentElement?.parentElement;
+                if (grandParent && grandParent.tagName.toLowerCase() === 'div') {
+                    grandParent.remove();
+                } else {
+                    el.remove();
                 }
-            });
+            }
         });
-    } catch (e) {
-        console.error('[TwInsible] errore in removeTokenContent:', e);
-    }
+    });
 }
 
-removeTokenContent().catch(e => console.error('[TwInsible] promise non gestita:', e));
+removeTokenContent();
