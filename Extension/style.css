@@ -3,12 +3,11 @@
     padding: 0;
     margin: 0;
     font-weight: 600;
-    text-shadow: #0a090c 1px 0 10px;
 }
 
 body {
     font-family: 'Work Sans', sans-serif;
-    background: url('download.jpg');
+    background: white;
     background-size: cover;
     background-position: center;
     display: flex;
@@ -16,7 +15,7 @@ body {
     align-items: center;
     height: 100vh;
     padding: 1rem;
-    color: #0a090c;
+    color: #322e39;
 }
 
 ::selection {
@@ -33,26 +32,60 @@ body {
     justify-content: center;
     flex-direction: column;
     max-width: 26rem;
-    box-shadow: rgba(50, 50, 50, 0.1) 0px 2px 8px 0px;
+    box-shadow: rgba(50, 50, 50, 0.4) 0px 2px 8px 0px;
     border: 1px solid #EDF1F3;
     width: 100%;
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
     border-radius: 1rem;
-    color: #F2F7FE;
+    color: #111926;
     transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.buble {
+    position: absolute;
+    border-radius: 999px;
+    z-index: -1;
+}
+
+.buble:nth-child(1) {
+    width: 360px;
+    height: 360px;
+    background-color: #bfdbfe;
+    filter: opacity(0.55) blur(15px);
+    top: -120px;
+    left: 100px;
+}
+
+.buble:nth-child(2) {
+    width: 300px;
+    height: 300px;
+    background-color: #fbcfe8;
+    filter: opacity(0.55) blur(15px);
+    top: 280px;
+    left: -100px;
+}
+
+.buble:nth-child(3) {
+    width: 360px;
+    height: 360px;
+    background-color: #d1d5db;
+    filter: opacity(0.5) blur(15px);
+    top: 240px;
+    left: 240px;
 }
 
 .dropzone-box h2 {
     font-size: 1.4rem;
     margin-bottom: 0.6rem;
-    color: #F2F7FE;
+    color: #322e39;
 }
 
 .dropzone-box p {
     font-size: 1rem;
     margin: 0;
-    color: #FFFFFF;
+    color: #322e39;
 }
 
 .dropzone-area {
@@ -100,7 +133,7 @@ body {
     max-width: 6rem;
     width: 100%;
     margin-bottom: 0.5rem;
-    stroke: #FFFFFF;
+    stroke: #aeb3b9;
 }
 
 .dropzone-area:hover {
@@ -143,7 +176,7 @@ body {
 .dropzone-actions button[type='reset'] {
     border-radius: 0.5rem;
     padding: 0.5rem 1rem;
-    color: #0a090c;
+    color: #322e39;
     background: #FEFFFF;
     cursor: pointer;
     border: 1px solid #D4DCE6;
@@ -152,7 +185,7 @@ body {
 
 .dropzone-actions button[type='reset']:hover {
     border: 1px solid #111926;
-    color: #111926;
+    color: #322e39;
 }
 
 .dropzone-actions button[type='submit'] {
