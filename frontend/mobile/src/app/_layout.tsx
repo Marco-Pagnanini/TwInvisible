@@ -7,6 +7,7 @@ export default function RootLayout() {
       <Stack.Screen name="chat" options={{ headerShown: false }} />
       <Stack.Screen name="loading" options={{ headerShown: false }} />
       <Stack.Screen name="graph" options={{ headerShown: false }} />
+      <Stack.Screen name="browser" options={{ headerShown: false }} />
     </Stack>
   );
 }

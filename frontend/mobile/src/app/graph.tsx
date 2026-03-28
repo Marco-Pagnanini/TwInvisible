@@ -1,7 +1,8 @@
 import { BlurView } from "expo-blur";
 import { router } from "expo-router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
+  Alert,
   Image,
   Pressable,
   ScrollView,
@@ -9,19 +10,20 @@ import {
   Text,
   View,
 } from "react-native";
+import { exportProfileAsJson } from "../utils";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, {
   Circle,
   Defs,
+  Line,
   LinearGradient,
   Polygon,
   Stop,
   Text as SvgText,
-  Line,
 } from "react-native-svg";
 
-import profiloData from "./profilo.json";
 import { getProfile } from "../store";
+import profiloData from "./profilo.json";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 const toNum = (v: string | number) => Math.min(100, Math.max(0, Number(v)));
@@ -236,6 +238,24 @@ export default function Graph() {
   const topMetric = METRICS[values.indexOf(Math.max(...values))];
   const bottomMetric = METRICS[values.indexOf(Math.min(...values))];
 
+  const [exporting, setExporting] = useState(false);
+
+  const handleExport = async () => {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      const profileToExport = stored ?? {
+        ci: raw.ci, urg: raw.urg, hobby: raw.hobby,
+        hype: raw.hype, disp_e: raw.disp_e, no: noList,
+      };
+      await exportProfileAsJson(profileToExport);
+    } catch (err: any) {
+      Alert.alert("Errore export", err?.message ?? "Impossibile esportare il file.");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <View style={styles.root}>
       {/* Background blobs */}
@@ -361,16 +381,24 @@ export default function Graph() {
 
           {/* Bottoni azione */}
           <Pressable
-            style={({ pressed }) => [styles.exportBtn, pressed && styles.btnPressed]}
+            style={({ pressed }) => [
+              styles.exportBtn,
+              pressed && styles.btnPressed,
+              exporting && styles.btnDisabled,
+            ]}
+            onPress={handleExport}
+            disabled={exporting}
           >
-            <Text style={styles.exportBtnText}>📄  Esporta file JSON</Text>
+            <Text style={styles.exportBtnText}>
+              {exporting ? "⏳  Esportazione..." : "📄  Esporta file JSON"}
+            </Text>
           </Pressable>
 
           <Pressable
             style={({ pressed }) => [styles.shareBtn, pressed && styles.btnPressed]}
-            onPress={() => router.back()}
+            onPress={() => router.push("/browser")}
           >
-            <Text style={styles.shareBtnText}>Continua sull'app</Text>
+            <Text style={styles.shareBtnText}>🛍️  Continua sull'app</Text>
           </Pressable>
         </ScrollView>
       </SafeAreaView>
@@ -540,5 +568,6 @@ const styles = StyleSheet.create({
   },
   shareBtnText: { color: "#6366f1", fontSize: 15, fontWeight: "600", letterSpacing: 0.3 },
 
-  btnPressed: { opacity: 0.82, transform: [{ scale: 0.98 }] },
+  btnPressed:  { opacity: 0.82, transform: [{ scale: 0.98 }] },
+  btnDisabled: { opacity: 0.55 },
 });
