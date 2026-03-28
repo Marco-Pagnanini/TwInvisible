@@ -1,6 +1,6 @@
 # TwInvisible
 
-TwInvisible è un’applicazione che permette di “nascondere” contenuti o interazioni su Twitter/X in modo personalizzato, tramite un backend ASP.NET, un frontend web, un’app mobile React Native e un’estensione Chrome che intercetta le richieste in tempo reale.  
+TwInvisible è un’applicazione che permette di “nascondere” contenuti o interazioni su ecomerce in modo personalizzato, tramite un backend ASP.NET, un’app mobile React Native e un’estensione Chrome che intercetta le richieste in tempo reale.  
 Tutto il sistema è orchestrato con **Docker** e **Aspire** per un deployment rapido e scalabile in ambiente locale o cloud.
 
 ---
