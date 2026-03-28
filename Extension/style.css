@@ -104,16 +104,6 @@ body {
     transition: all 0.3s ease-in-out;
 }
 
-.dropzone-descriptions {
-    margin-top: 1rem;
-    display: flex;
-    justify-content: space-between;
-}
-
-.dropzone-descriptions-span{
-    font-size: 1rem;
-}
-
 .dropzone-area .file-info {
     font-size: 1.1rem;
 }
@@ -159,18 +149,6 @@ body {
     font-size: 1rem;
     border: none;
     transition: all 0.3 ease;
-}
-
-.dropzone-help {
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.dropzone-help svg {
-    width: 2.25rem;
-    height: 2.25rem;
 }
 
 .dropzone-actions button[type='reset'] {
