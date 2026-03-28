@@ -1,4 +1,5 @@
 async function getTokensFromJson() {
+    // Get the json from chrome storage with key 'twin'
     const stored = await new Promise((resolve, reject) => {
         try {
             chrome.storage.local.get(['twin'], result => {
@@ -22,15 +23,15 @@ async function getTokensFromJson() {
     if (stored) {
         return stored;
     }
-
-    // No bundled tokens.json fallback needed
+    // No tokens found
     return { tokens: [] };
 }
 
 async function modifyHtmlFromDom(instructions) {
+    // Get html body
     const html = document.body.outerHTML;
-    console.log('[TwInvisible] HTML size:', html.length, 'chars');
 
+    // Return the output by calling the function in background.js with chrome.runtime
     return new Promise((resolve, reject) => {
         chrome.runtime.sendMessage(
             { type: 'MODIFY_HTML', html, instructions },
@@ -41,7 +42,6 @@ async function modifyHtmlFromDom(instructions) {
                     reject(new Error(err.message));
                     return;
                 }
-                console.log('[TwInvisible] Background response:', JSON.stringify(response).substring(0, 500));
                 if (response?.success) {
                     resolve(response.data);
                 } else {
@@ -62,22 +62,22 @@ function buildInstructionsFromTokens(tokensData) {
 
 async function removeTokenContent() {
     try {
+        // Get json file
         const jsonFile = await getTokensFromJson();
-
+        // If no token skip
         if (!jsonFile || !jsonFile.tokens || jsonFile.tokens.length === 0) {
-            console.log('[TwInvisible] No tokens found, skipping.');
             return;
         }
 
+        // Translate json to instructions for the API
         const instructions = buildInstructionsFromTokens(jsonFile);
-        console.log('[TwInvisible] Sending request with instructions:', instructions);
 
+        // Get the output with the API call
         const result = await modifyHtmlFromDom(instructions);
-        console.log('[TwInvisible] Result received. success:', result?.success, 'modifiedHtml length:', result?.modifiedHtml?.length, 'selectors:', result?.selectorsApplied);
 
+        // Put the output (new body) in the body, checking the result first
         if (result && result.modifiedHtml) {
             document.body.outerHTML = result.modifiedHtml;
-            console.log('[TwInvisible] Page modified! Selectors applied:', result.selectorsApplied);
         } else {
             console.warn('[TwInvisible] No modifiedHtml in response:', result);
         }
