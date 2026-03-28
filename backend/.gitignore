@@ -1,0 +1,22 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+
+## Visual Studio
+.vs/
+
+## Environment
+.env
+
+## IDE
+.idea/
+.vscode/
+
+## OS
+Thumbs.db
+.DS_Store
+
+## Claude
+.claude/
